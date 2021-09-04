@@ -63,3 +63,16 @@ https://icanhazdadjoke.com/api
 - credits button
 - next button
 
+## Motes for magtag-dadjokes
+
+This project was inspired by the following examples:
+
+https://learn.adafruit.com/google-graveyard-with-adafruit-magtag/code-the-google-graveyard<br>
+
+https://icanhazdadjoke.com/api<br>
+
+Everyone needs a good bad-dad-joke, and what better way than a gadget like the Magtag on 
+the referidgerator to allow "sharing" them daily?
+
+
+
