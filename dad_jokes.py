@@ -8,33 +8,32 @@ import alarm
 import terminalio
 from adafruit_magtag.magtag import MagTag
 
-# Set up where we'll be fetching data from
-# DATA_SOURCE = (
-#     "https://icanhazdadjoke.com/"
-# )
-DATA_SOURCE = (
-    "https://raw.githubusercontent.com/codyogden/killedbygoogle/main/graveyard.json"
-)
+jokes = [
+  "We only tell these to our kids to help them learn...really!"
+]
 
-# Get the MagTag ready
+try:
+    from backup_jokes import backup_jokes
+    jokes = backup_jokes
+except ImportError:
+    print("Default backup_jokes.py not found on CIRCUITPY")
+    pass
+
+
+# Set up where we'll be fetching data from
+DATA_SOURCE = (
+    "https://icanhazdadjoke.com/"
+)
+# DATA_SOURCE = (
+#     "https://raw.githubusercontent.com/codyogden/killedbygoogle/main/graveyard.json"
+# )
+
 MAGTAG = MagTag()
 MAGTAG.peripherals.neopixel_disable = True
-# MAGTAG.set_background("/bmps/background.bmp")
-## MAGTAG.network.connect()
-
-# google graveyard for positions below
-# Prepare the three text fields
-#
-#  name         description
-#  ...          ...
-#  ...          ...
-#  date         ...
-#               ...
-#
 
 MAGTAG.add_text(
   # name
-    # text_font="/fonts/Deutsch-Gothic-14.bdf",
+    text_font=terminalio.FONT,
     text_position=(7, 2,),
     text_wrap=30,
     text_anchor_point=(0, 0),
@@ -44,7 +43,7 @@ MAGTAG.add_text(
 )
 
 MAGTAG.add_text(
-    # text_font="/fonts/Deutsch-Gothic-14.bdf",
+    text_font=terminalio.FONT,
     text_position=(215, 2,),
     text_anchor_point=(0, 0),
     text_scale=1,
@@ -52,7 +51,6 @@ MAGTAG.add_text(
 )
 
 MAGTAG.add_text(
-  # description
     text_font=terminalio.FONT,
     text_position=(20, 30,),
     text_wrap=40,
@@ -62,78 +60,55 @@ MAGTAG.add_text(
     is_data=False,
 )
 
-MAGTAG.add_text(
-  # description
-    text_font=terminalio.FONT,
-    text_position=(20, 70,),
-    text_wrap=40,
-    text_anchor_point=(0, 0),
-    text_scale=1,
-    line_spacing=1.0,
-    is_data=False,
-)
-
 MAGTAG.preload_font()  # preload characters
 
-# SONG = (
-#     (330, 1),
-#     (370, 1),
-#     (392, 2),
-#     (370, 2),
-#     (330, 2),
-#     (330, 1),
-#     (370, 1),
-#     (392, 1),
-#     (494, 1),
-#     (370, 1),
-#     (392, 1),
-#     (330, 2),
-# )
+# load random from offline jokes list
+# display
+# get battery
+# wait 5 seconds
+# attempt to get new joke from site
+# display
+# wait 5 seconds and go to deep sleep
+# button press should start from top of file?
+
+# press A - wake, press D - lights?
 
 MAGTAG.set_text("Bad-Dad-Joke Machine", 0, False)
+#MAGTAG.set_text("battery: ---%", 1, False)
+try:
+  temp = f'battery: {MAGTAG.battery()} V'
+  MAGTAG.set_text(temp, 1, False)
+except:
+    pass
 
-MAGTAG.set_text("battery: ---%", 1, False)
+joke = "- " + jokes[random.randint(0, len(jokes) - 1)]
+MAGTAG.set_text(joke, 2)
+
+# start network after
+MAGTAG.network.connect()
 
 while True:
     try:
         print("trying: ", DATA_SOURCE)
         # Get the response and turn it into json
-        # RESPONSE = MAGTAG.network.requests.get(DATA_SOURCE)
-        # VALUE = RESPONSE.json()
+        RESPONSE = MAGTAG.network.requests.get(DATA_SOURCE)
+        VALUE = RESPONSE.json()
 
-        VALUE = {}
-        VALUE["id"] = "R7UfaahVfFd"
-        VALUE["joke"] = "My dog used to chase people on a bike a lot. It got so bad I had to take his bike away."
-        VALUE["status"] = 200
+        # VALUE = {}
+        # VALUE["id"] = "R7UfaahVfFd"
+        # VALUE["joke"] = "My dog used to chase people on a bike a lot. It got so bad I had to take his bike away."
+        # VALUE["status"] = 200
         # print(VALUE)
 
-        # # Choose a random project to display
-        # PROJECT = VALUE[random.randint(0, len(VALUE) - 1)]
-
-        # # Prepare the text to be displayed
-        # CLOSED = PROJECT["dateClose"].split("-")
-        # CLOSED.reverse()
-        # CLOSED = "/".join(CLOSED)
-
-        # print(PROJECT["name"])
-
         # Display the text
-        # MAGTAG.set_text(PROJECT["name"], 0, False)
-        # MAGTAG.set_text(CLOSED, 1, False)
-        # MAGTAG.set_text(PROJECT["description"], 2)
-        parts = VALUE["joke"].split(".")
-
-        MAGTAG.set_text(parts[0], 2, False)
-        MAGTAG.set_text(parts[1], 3)
-
-        # # Play a song
-        # for notepair in SONG:
-        #     MAGTAG.peripherals.play_tone(notepair[0], notepair[1] * 0.2)
-
-        # Put the board to sleep for an hour
         time.sleep(2)
-        print("Sleeping")
-        PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 60)
+        # TODO test idea:  replace ? ... with \r\n
+        MAGTAG.set_text(VALUE["joke"], 2)
+
+        # Put the board to sleep for a day
+        time.sleep(2)
+        print("Sleeping 24 hours")
+        PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 60 * 24)
         alarm.exit_and_deep_sleep_until_alarms(PAUSE)
 
     except (ValueError, RuntimeError) as e:
