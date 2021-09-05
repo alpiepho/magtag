@@ -10,10 +10,26 @@ The shipping demo code is in preloaded.ino and described here:
 https://learn.adafruit.com/adafruit-magtag/shipping-demo
 
 
+Using CP bootloader:
+
+adafruit-circuitpython-adafruit_magtag_2.9_grayscale-en_US-6.3.0.uf2
+
 
 Using bundle:
 
 https://github.com/adafruit/Adafruit_CircuitPython_Bundle/releases/download/20210903/adafruit-circuitpython-bundle-6.x-mpy-20210903.zip
+
+
+
+## Files
+
+- cpcode.py - default circuitpython from bundle (with stdout going to screen)
+- dad_jokes.py - see below
+- get_date_time.py - example from adafruit, see below
+- interent_test.py - example from adafruit, see below
+- preloaded.ino - the pre loaded code on the hardware, see below
+- preloaded.py - my port of preloaded to circuitpython
+- sample_secret.py - example of secrets file that goes at root
 
 
 ## Internet test
@@ -62,6 +78,7 @@ https://icanhazdadjoke.com/api
 - (optional) Signup for account and test time
 - credits button
 - next button
+- clean up README.md
 
 ## Motes for magtag-dadjokes
 
