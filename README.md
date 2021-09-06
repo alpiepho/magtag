@@ -1,5 +1,5 @@
 
-This repo contains a number fo the simple examples that are provided by the
+This repo contains a number of the simple examples that are provided by the
 Magtag Overview:
 - https://learn.adafruit.com/adafruit-magtag/overview
 
@@ -92,6 +92,7 @@ https://icanhazdadjoke.com/api<br>
 - [done] turn on dad joke
 - [fail] idea: split lines with extra \r\n
 - [done] battery as a percent
+- fix battery percent
 - add next button to dad joke, enabled while awake
 - add light button to dad joke, how to wake?
 - code preloaded.py from preloaded.ino
@@ -99,7 +100,7 @@ https://icanhazdadjoke.com/api<br>
 - convert dad joke to a coffee pot watcher?
 
 
-## Motes for magtag-dadjokes
+## Notes for magtag-dadjokes
 
 This project was inspired by the following examples:
 
@@ -109,6 +110,7 @@ https://icanhazdadjoke.com/api<br>
 
 Everyone needs a good bad-dad-joke, and what better way than a gadget like the Magtag on 
 the referidgerator to allow "sharing" them daily?
+
 
 Rough outline:
 - load random from offline jokes list
