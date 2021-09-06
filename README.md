@@ -89,13 +89,13 @@ https://icanhazdadjoke.com/api<br>
 - [done] clean up README.md
 - [done] code dad joke from offline
 - (optional) Signup for account and test time
-- turn on dad joke
+- [done] turn on dad joke
+- [fail] idea: split lines with extra \r\n
+- [done] battery as a percent
 - add next button to dad joke, enabled while awake
 - add light button to dad joke, how to wake?
 - code preloaded.py from preloaded.ino
 - turn on preloaded.py from preloaded.ino
-- idea: split lines with extra \r\n
-- battery as a percent
 - convert dad joke to a coffee pot watcher?
 
 

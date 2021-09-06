@@ -7,6 +7,7 @@ import alarm
 import terminalio
 from adafruit_magtag.magtag import MagTag
 
+
 jokes = ["We only tell these to our kids to help them learn...really!"]
 
 try:
@@ -21,7 +22,7 @@ except ImportError:
 DATA_SOURCE = "https://icanhazdadjoke.com/"
 
 MAGTAG = MagTag()
-MAGTAG.peripherals.neopixel_disable = True
+MAGTAG.peripherals.neopixel_disable = False
 
 MAGTAG.add_text(
     # name
@@ -40,7 +41,7 @@ MAGTAG.add_text(
 MAGTAG.add_text(
     text_font=terminalio.FONT,
     text_position=(
-        215,
+        205,
         2,
     ),
     text_anchor_point=(0, 0),
@@ -56,57 +57,55 @@ MAGTAG.add_text(
     ),
     text_wrap=40,
     text_anchor_point=(0, 0),
-    text_scale=1,
+    text_scale=1.0,
     line_spacing=1.0,
     is_data=False,
 )
 
-MAGTAG.preload_font()  # preload characters
-
-# load random from offline jokes list
-# display
-# get battery
-# wait 5 seconds
-# attempt to get new joke from site
-# display
-# wait 5 seconds and go to deep sleep
-# button press should start from top of file?
-
-# press A - wake, press D - lights?
+# MAGTAG.preload_font()  # preload characters
 
 MAGTAG.set_text("Bad-Dad-Joke Machine", 0, False)
 MAGTAG.set_text("battery: ---%", 1, False)
 try:
-    temp = f"battery: {MAGTAG.battery()} V"
+    batt = MAGTAG.peripherals.battery
+    print(batt)
+    temp = f"battery: {batt:.2f}V"
+    if batt > 4.0:
+        temp = f"battery: usb"
+    else:
+        if batt > 3.7:
+            batt = 3.7
+        batt = 100 * batt / 3.7
+        temp = f"battery: {batt:.2f}%"
     MAGTAG.set_text(temp, 1, False)
 except:
     pass
 
-# HACK: mark offline jokes with leading -
-joke = "- " + jokes[random.randint(0, len(jokes) - 1)]
+# HACK: mark offline jokes with leading .
+joke = "." + jokes[random.randint(0, len(jokes) - 1)]
 MAGTAG.set_text(joke, 2)
 
-# start network after
-MAGTAG.network.connect()
-
+loops = 0
 while True:
     try:
         print("trying: ", DATA_SOURCE)
-        # Get the response and turn it into json
-        RESPONSE = MAGTAG.network.requests.get(DATA_SOURCE)
+        MAGTAG.network.connect()
+        RESPONSE = MAGTAG.network.requests.get(DATA_SOURCE, headers={"accept": "application/json"})
         VALUE = RESPONSE.json()
+        print(VALUE["joke"])
 
-        # Display the text
-        time.sleep(2)
+        # leave the backup joke for a minimum time
+        time.sleep(60)
+
+        # display the latest joke
         MAGTAG.set_text(VALUE["joke"], 2)
 
-        # Put the board to sleep for a day
-        time.sleep(2)
-        # print("Sleeping 1 hour")
-        # PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 60)
-        print("Sleeping 1 minute")
-        PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60)
-        alarm.exit_and_deep_sleep_until_alarms(PAUSE)
+    # except (ValueError, RuntimeError) as e:
+    #     print("Some error occured, retrying! -", e)
+    except:
+        pass
 
-    except (ValueError, RuntimeError) as e:
-        print("Some error occured, retrying! -", e)
+    # put the board to sleep
+    print("Sleeping 1 hour")
+    PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 60)
+    alarm.exit_and_deep_sleep_until_alarms(PAUSE)
