@@ -126,8 +126,8 @@ Rough outline:
 - [done] turn on dad joke
 - [fail] idea: split lines with extra \r\n
 - [done] battery as a percent
-- fix battery percent
-- fix fonts
+- [done] fix battery percent
+- [done] fix fonts
 - add next button to dad joke, enabled while awake
 - add light button to dad joke, how to wake?
 - copy libs to repo

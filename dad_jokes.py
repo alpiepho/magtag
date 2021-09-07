@@ -13,8 +13,8 @@ DATA_SOURCE = "https://icanhazdadjoke.com/"
 MAGTAG = MagTag()
 MAGTAG.peripherals.neopixel_disable = False
 
+# title
 MAGTAG.add_text(
-    # name
     text_font=terminalio.FONT,
     text_position=(
         7,
@@ -27,6 +27,7 @@ MAGTAG.add_text(
     is_data=False,
 )
 
+# battery
 MAGTAG.add_text(
     text_font=terminalio.FONT,
     text_position=(
@@ -38,24 +39,26 @@ MAGTAG.add_text(
     is_data=False,
 )
 
+# joke
 MAGTAG.add_text(
-    text_font=terminalio.FONT,
+    text_font="/fonts/Arial-Bold-12.pcf",
     text_position=(
+        5,
         20,
-        30,
     ),
-    text_wrap=40,
+    text_wrap=34,
     text_anchor_point=(0, 0),
     text_scale=1.0,
     line_spacing=1.0,
     is_data=False,
 )
 
+# offline/online
 MAGTAG.add_text(
     text_font=terminalio.FONT,
     text_position=(
-        20,
-        90,
+        205,
+        110,
     ),
     text_wrap=40,
     text_anchor_point=(0, 0),
@@ -71,7 +74,7 @@ MAGTAG.set_text("battery: ---%", 1, False)
 loops = 0
 count = 0
 while True:
-    if count == 0:
+    if loops == 0:
         try:
             batt = MAGTAG.peripherals.battery
             print(batt)
