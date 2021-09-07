@@ -87,14 +87,7 @@ https://icanhazdadjoke.com/api<br>
 
 - [done] Turn on internet_test.py
 - [done] clean up README.md
-- [done] code dad joke from offline
 - (optional) Signup for account and test time
-- [done] turn on dad joke
-- [fail] idea: split lines with extra \r\n
-- [done] battery as a percent
-- fix battery percent
-- add next button to dad joke, enabled while awake
-- add light button to dad joke, how to wake?
 - code preloaded.py from preloaded.ino
 - turn on preloaded.py from preloaded.ino
 - convert dad joke to a coffee pot watcher?
@@ -111,13 +104,33 @@ https://icanhazdadjoke.com/api<br>
 Everyone needs a good bad-dad-joke, and what better way than a gadget like the Magtag on 
 the referidgerator to allow "sharing" them daily?
 
+Files:
+- code.py - main code file
+- backup_jokes.py - set of jokes to show before online jokes found
+- get_jokes.py - script to build new backup_jokes.py
+
 
 Rough outline:
-- load random from offline jokes list
-- display
-- get battery
-- wait 5 seconds
-- attempt to get new joke from site
-- display
-- wait 5 seconds and go to deep sleep
-- button press should start from top of file?
+- set up text areas
+- set title
+- attempt to get current battery and display
+- attempt open backup jokes and randomly display
+- attempt to get online joke
+- wait minimum of 1 minute (showing backup)
+- show online joke
+- enter deep sleep for 10 minutes
+
+## TODO List
+
+- [done] code dad joke from offline
+- [done] turn on dad joke
+- [fail] idea: split lines with extra \r\n
+- [done] battery as a percent
+- fix battery percent
+- fix fonts
+- add next button to dad joke, enabled while awake
+- add light button to dad joke, how to wake?
+- copy libs to repo
+- finish repo and README
+
+
