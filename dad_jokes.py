@@ -11,7 +11,7 @@ from adafruit_magtag.magtag import MagTag
 DATA_SOURCE = "https://icanhazdadjoke.com/"
 
 MAGTAG = MagTag()
-MAGTAG.peripherals.neopixel_disable = False
+MAGTAG.peripherals.neopixel_disable = True
 
 # title
 MAGTAG.add_text(
@@ -73,6 +73,7 @@ MAGTAG.set_text("battery: ---%", 1, False)
 
 loops = 0
 count = 0
+deep_sleep = True
 while True:
     if loops == 0:
         try:
@@ -99,11 +100,19 @@ while True:
 
     # check for buttons during 1st minute
     if MAGTAG.peripherals.button_a_pressed:
-        pass
+        deep_sleep = False
+    if MAGTAG.peripherals.button_b_pressed:
+        deep_sleep = False
+        # MAGTAG.peripherals.neopixel_disable = False
+    if MAGTAG.peripherals.button_c_pressed:
+        deep_sleep = False
+    if MAGTAG.peripherals.button_d_pressed:
+        deep_sleep = False
+
     # A - next
     # B - dont sleep
     # C - lights on/off
-    # D - ???
+    # D - change rate
 
     if loops >= 60:
         try:
@@ -124,5 +133,10 @@ while True:
         # put the board to sleep
         print("Sleeping 10 minutes")
         PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 10)
-        alarm.exit_and_deep_sleep_until_alarms(PAUSE)
+        if deep_sleep:
+            alarm.exit_and_deep_sleep_until_alarms(PAUSE)
+        else:
+            loops = 0
+            alarm.light_sleep_until_alarms(PAUSE)
+
     loops = loops + 1
