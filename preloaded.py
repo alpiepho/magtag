@@ -1,11 +1,17 @@
 # my attempted at reproducing preloaded.ino in circuitpython
 
-# TBD
 
-from os import read
-from typing_extensions import Unpack
-from dad_jokes import MAGTAG
+# import board
+# import json
+# import time
+# import random
+# import alarm
+# import terminalio
+from adafruit_magtag.magtag import MagTag
+from rainbowio import colorwheel  # TODO install to lib
 
+MAGTAG = MagTag()
+MAGTAG.peripherals.neopixel_disable = False
 
 # - shows MAGTAG
 # - flashes LEDS
@@ -19,26 +25,10 @@ from dad_jokes import MAGTAG
 # rotation?
 # may have to reinstall ino (good to learn how)
 
+print("Adafruit EPD Portal demo, in CircuitPython")
 
-# Adafruit_NeoPixel intneo = Adafruit_NeoPixel(4, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
-# ThinkInk_290_Grayscale4_T5 display(EPD_DC, EPD_RESET, EPD_CS, -1, -1);
-# Adafruit_LIS3DH lis = Adafruit_LIS3DH();
-
-# uint8_t j = 0;
-# void setup() {
-#   Serial.begin(115200);
-#   //while (!Serial) { delay(10); }
-#   delay(100);
-#   Serial.println("Adafruit EPD Portal demo");
-
-#   intneo.begin();
-#   intneo.setBrightness(50);
-#   intneo.show(); // Initialize all pixels to 'off'
-
-#   pinMode(BUTTON_A, INPUT_PULLUP);
-#   pinMode(BUTTON_B, INPUT_PULLUP);
-#   pinMode(BUTTON_C, INPUT_PULLUP);
-#   pinMode(BUTTON_D, INPUT_PULLUP);
+MAGTAG.peripherals.neopixels.setBrightness(0.5)
+MAGTAG.peripherals.neopixel_disable = True  # Initialize all pixels to 'off'
 
 #   pinMode(SPEAKER_SHUTDOWN, OUTPUT);
 #   digitalWrite(SPEAKER_SHUTDOWN, LOW);
@@ -68,11 +58,14 @@ from dad_jokes import MAGTAG
 #   display.clearBuffer();
 #   display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK);
 #   display.display();
-# }
 
 
 
-# uint8_t rotation = 0;
+loops = 0
+rotation = 0
+
+while True:
+    loops = loops + 1
 
 # void loop() {
 #   j++;
