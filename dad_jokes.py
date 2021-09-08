@@ -1,6 +1,7 @@
 # Started from https://learn.adafruit.com/google-graveyard-with-adafruit-magtag/code-the-google-graveyard
 
-import json
+# import board
+# import json
 import time
 import random
 import alarm
@@ -10,8 +11,8 @@ from adafruit_magtag.magtag import MagTag
 
 DATA_SOURCE = "https://icanhazdadjoke.com/"
 
-MAGTAG = MagTag()
-MAGTAG.peripherals.neopixel_disable = True
+MAGTAG = MagTag(status_neopixel=None)
+MAGTAG.peripherals.neopixel_disable = False
 
 # title
 MAGTAG.add_text(
@@ -57,7 +58,7 @@ MAGTAG.add_text(
 MAGTAG.add_text(
     text_font=terminalio.FONT,
     text_position=(
-        205,
+        215,
         110,
     ),
     text_wrap=40,
@@ -73,9 +74,10 @@ MAGTAG.set_text("battery: ---%", 1, False)
 
 loops = 0
 count = 0
-deep_sleep = True
+sleep_level = 1
+
 while True:
-    if loops == 0:
+    if (loops % 600) == 0:
         try:
             batt = MAGTAG.peripherals.battery
             print(batt)
@@ -93,28 +95,35 @@ while True:
             pass
         joke = jokes[random.randint(0, len(jokes) - 1)]
         MAGTAG.set_text(joke, 2, False)
-        MAGTAG.set_text(f'(offline)', 3)
+        MAGTAG.set_text(f'', 3)
 
-    # leave the backup joke for a minimum time
-    time.sleep(1)
+    time.sleep(0.1)
 
     # check for buttons during 1st minute
     if MAGTAG.peripherals.button_a_pressed:
-        deep_sleep = False
+        MAGTAG.set_text(f'next...', 3)
+        loops = -1
+
     if MAGTAG.peripherals.button_b_pressed:
-        deep_sleep = False
-        # MAGTAG.peripherals.neopixel_disable = False
-    if MAGTAG.peripherals.button_c_pressed:
-        deep_sleep = False
-    if MAGTAG.peripherals.button_d_pressed:
-        deep_sleep = False
+        sleep_level = sleep_level + 1
+        if sleep_level > 2:
+            sleep_level = 0
+        if sleep_level == 0:
+            MAGTAG.set_text(f'sleep: none', 3)
+        if sleep_level == 1:
+            MAGTAG.set_text(f'sleep: 1min', 3)
+        if sleep_level == 2:
+            MAGTAG.set_text(f'sleep: 10min', 3)
 
-    # A - next
-    # B - dont sleep
-    # C - lights on/off
-    # D - change rate
+    # if MAGTAG.peripherals.button_c_pressed:
+    #     MAGTAG.set_text(f'button C', 3)
+    #     print("C")
 
-    if loops >= 60:
+    # if MAGTAG.peripherals.button_d_pressed:
+    #     MAGTAG.set_text(f'button D', 3)
+    #     print("D")
+
+    if loops > 0 and (loops % 600) == 0:
         try:
             print("trying: ", DATA_SOURCE)
             MAGTAG.network.connect()
@@ -123,20 +132,28 @@ while True:
             print(VALUE["joke"])
             MAGTAG.set_text(VALUE["joke"], 2, False)
             count = count + 1
-            MAGTAG.set_text(f'(online: {count})', 3)
+            MAGTAG.set_text(f'online: {count}', 3)
 
-        # except (ValueError, RuntimeError) as e:
-        #     print("Some error occured, retrying! -", e)
-        except:
-            pass
+        except Exception as e:
+            print("Some error occured, retrying! -", e)
 
         # put the board to sleep
-        print("Sleeping 10 minutes")
-        PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 10)
-        if deep_sleep:
-            alarm.exit_and_deep_sleep_until_alarms(PAUSE)
-        else:
+        if sleep_level == 1:
             loops = 0
+            print("Sleeping 1 minute")
+            PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60)
+            MAGTAG.peripherals.neopixel_disable = True
             alarm.light_sleep_until_alarms(PAUSE)
+            MAGTAG.peripherals.neopixel_disable = False
+            # BUTTONA = alarm.touch.TouchAlarm(pin=board.BUTTON_A)
+            # BUTTONB = alarm.touch.TouchAlarm(pin=board.BUTTON_B)
+            # BUTTONC = alarm.touch.TouchAlarm(pin=board.BUTTON_C)
+            # BUTTOND = alarm.touch.TouchAlarm(pin=board.BUTTON_D)
+            # alarm.light_sleep_until_alarms(PAUSE, BUTTONA, BUTTONB, BUTTONC, BUTTOND)
+        if sleep_level == 2:
+            print("Sleeping 10 minutes")
+            PAUSE = alarm.time.TimeAlarm(monotonic_time=time.monotonic() + 60 * 10)
+            MAGTAG.peripherals.neopixel_disable = True
+            alarm.exit_and_deep_sleep_until_alarms(PAUSE)
 
     loops = loops + 1
