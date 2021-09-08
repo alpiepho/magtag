@@ -76,8 +76,36 @@ loops = 0
 count = 0
 light_count = 0
 sleep_level = 0  # TODO use level 1 if wake-from-button works
+default_jokes = ["We only tell these to our kids to help them learn...really!"]
 
 while True:
+    time.sleep(1)
+
+    # button A - next joke
+    if MAGTAG.peripherals.button_a_pressed:
+        MAGTAG.set_text(f"next...", 3)
+        loops = -1
+
+    # button B - default joke
+    if MAGTAG.peripherals.button_b_pressed:
+        MAGTAG.set_text(default_jokes[0], 2, False)
+        MAGTAG.set_text(f"", 3)
+
+    # button D - night light
+    if MAGTAG.peripherals.button_d_pressed:
+        if light_count == 0:
+            light_count = 30
+        else:
+            light_count = 0
+
+    # keep light on for 30 seconds
+    if light_count > 0:
+        MAGTAG.peripherals.neopixel_disable = False
+        MAGTAG.peripherals.neopixels.fill((255, 255, 255))
+    else:
+        MAGTAG.peripherals.neopixel_disable = True
+        MAGTAG.peripherals.neopixels.fill((0, 0, 0))
+
     if (loops % 60) == 0:
         try:
             batt = MAGTAG.peripherals.battery
@@ -86,10 +114,12 @@ while True:
             batt = 100 * batt / 4.2
             if batt < 10.0:
                 sleep_level = 2
-            MAGTAG.set_text(f"battery: {batt:.2f}%", 1, False)
+            MAGTAG.set_text(f"battery: {batt:.0f}%", 1, False)
         except:
             pass
-        jokes = ["We only tell these to our kids to help them learn...really!"]
+
+    if loops == 0:
+        jokes = default_jokes
         try:
             from backup_jokes import backup_jokes
 
@@ -100,25 +130,6 @@ while True:
         joke = jokes[random.randint(0, len(jokes) - 1)]
         MAGTAG.set_text(joke, 2, False)
         MAGTAG.set_text(f"", 3)
-
-    time.sleep(1)
-
-    # button A - next joke
-    if MAGTAG.peripherals.button_a_pressed:
-        MAGTAG.set_text(f"next...", 3)
-        loops = -1
-
-    # button D - night light
-    if MAGTAG.peripherals.button_d_pressed:
-        light_count = 30
-
-    # keep light on for 30 seconds
-    if light_count > 0:
-        MAGTAG.peripherals.neopixel_disable = False
-        MAGTAG.peripherals.neopixels.fill((255, 255, 255))
-    else:
-        MAGTAG.peripherals.neopixel_disable = True
-        MAGTAG.peripherals.neopixels.fill((0, 0, 0))
 
     if loops > 0 and (loops % 60) == 0:
         try:
@@ -136,6 +147,9 @@ while True:
 
         except Exception as e:
             print("Some error occured, retrying! -", e)
+            joke = jokes[random.randint(0, len(jokes) - 1)]
+            MAGTAG.set_text(joke, 2, False)
+            MAGTAG.set_text(f"", 3)
 
         # put the board to sleep
         if sleep_level == 1:
