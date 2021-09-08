@@ -2,28 +2,12 @@
 
 
 import board
-# import json
-# import time
-# import random
-# import alarm
-# import terminalio
+import time
 from adafruit_magtag.magtag import MagTag
 from rainbowio import colorwheel  # TODO install to lib
 
 MAGTAG = MagTag(status_neopixel=None)
 MAGTAG.peripherals.neopixel_disable = False
-
-# - shows MAGTAG
-# - flashes LEDS
-# - 4 buttons
-# - wakeup
-# - flash and invert MAGTAG
-# - button 1 - all leds red while held
-# - button 2 - all leds green while held
-# - button 3 - all leds blue while held
-# - button 4 - sound.  and leds?
-# rotation?
-# may have to reinstall ino (good to learn how)
 
 print("Adafruit EPD Portal demo, in CircuitPython")
 
@@ -72,15 +56,9 @@ while True:
             MAGTAG.display.setRotation(rotation*90) # TODO: will this work?
              MAGTAG.display.clearBuffer()
              MAGTAG.display.drawBitmap()
-#   if (j == 0) {
-#     Serial.print("Rotation: "); Serial.println(rotation);
-#     if (rotation == 0 || rotation == 2) {
-#       display.setRotation(rotation);
-#       display.clearBuffer();
-#       display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK);
-#       display.display();
-#     }
-#   }
+            # display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK);
+            # display.display();
+
 #   // Red LED On
 #   digitalWrite(13, HIGH);
 
@@ -124,68 +102,28 @@ while True:
 #       Serial.println();
 #   }
 
-#   if (! digitalRead(BUTTON_A)) {
-#     Serial.println("Button A pressed");
-#     intneo.fill(0xFF0000);
-#     intneo.show();    
-#   }
-#   else if (! digitalRead(BUTTON_B)) {
-#     Serial.println("Button B pressed");
-#     intneo.fill(0x00FF00);
-#     intneo.show();    
-#   }
-#   else if (! digitalRead(BUTTON_C)) {
-#     Serial.println("Button C pressed");
-#     intneo.fill(0x0000FF);
-#     intneo.show();
-#   }
-#   else if (! digitalRead(BUTTON_D)) {
-#     intneo.fill(0x0);
-#     intneo.show();
-#     Serial.println("Button D pressed");
-#     digitalWrite(SPEAKER_SHUTDOWN, HIGH);
-#     play_tune(audio, sizeof(audio));
-#     digitalWrite(SPEAKER_SHUTDOWN, LOW);
-#   } else {
-#     // neopixelate
-    for i in range(len(macropad.pixels)):
-        color_value = ((i * 256 / len(macropad.pixels)) + loops) % 255
-        macropad.pixels[i] = colorwheel(color_value)
-#     for (int i = 0; i < intneo.numPixels(); i++) {
-#       intneo.setPixelColor(i, Wheel(((i * 256 / intneo.numPixels()) + j) & 255));
-#     }
-#     intneo.show(); 
-#   }
+    if MAGTAG.peripherals.button_a_pressed:
+        print("Button A pressed")
+        MAGTAG.peripherals.neopixels.fill(0xFF0000)
+    elif MAGTAG.peripherals.button_b_pressed:
+        print("Button B pressed")
+        MAGTAG.peripherals.neopixels.fill(0x00FF00)
+    elif MAGTAG.peripherals.button_c_pressed:
+        print("Button C pressed")
+        MAGTAG.peripherals.neopixels.fill(0x0000FF)
+    elif MAGTAG.peripherals.button_d_pressed:
+        print("Button D pressed")
+        MAGTAG.peripherals.speaker_disable = False
+        MAGTAG.play_tone(1319, 0.1)
+        MAGTAG.play_tone(988, 0.1)
+        MAGTAG.peripherals.speaker_disable = True
+    else:
+        # neopixelate
+        for i in range(len(MAGTAG.peripherals.neopixels)):
+        color_value = ((i * 256 / len(MAGTAG.peripherals.neopixels)) + loops) % 255
+        MAGTAG.peripherals.neopixels[i] = colorwheel(color_value)
 
 #   // Red LED off
 #   digitalWrite(13, LOW);
 
-
-#   delay(10);
-# }
-
-# void play_tune(const uint8_t *audio, uint32_t audio_length) {
-#   uint32_t t;
-#   uint32_t prior, usec = 1000000L / SAMPLE_RATE;
-  
-#   for (uint32_t i=0; i<audio_length; i++) {
-#     while((t = micros()) - prior < usec);
-#     dacWrite(A0, audio[i]);
-#     prior = t;
-#   }
-# }
-
-# // Input a value 0 to 255 to get a color value.
-# // The colours are a transition r - g - b - back to r.
-# uint32_t Wheel(byte WheelPos) {
-#   WheelPos = 255 - WheelPos;
-#   if (WheelPos < 85) {
-#     return intneo.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-#   }
-#   if (WheelPos < 170) {
-#     WheelPos -= 85;
-#     return intneo.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-#   }
-#   WheelPos -= 170;
-#   return intneo.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-# }
+    time.sleep(0.01)
