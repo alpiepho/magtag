@@ -1,7 +1,7 @@
 # my attempted at reproducing preloaded.ino in circuitpython
 
 
-# import board
+import board
 # import json
 # import time
 # import random
@@ -10,7 +10,7 @@
 from adafruit_magtag.magtag import MagTag
 from rainbowio import colorwheel  # TODO install to lib
 
-MAGTAG = MagTag()
+MAGTAG = MagTag(status_neopixel=None)
 MAGTAG.peripherals.neopixel_disable = False
 
 # - shows MAGTAG
@@ -29,12 +29,11 @@ print("Adafruit EPD Portal demo, in CircuitPython")
 
 MAGTAG.peripherals.neopixels.setBrightness(0.5)
 MAGTAG.peripherals.neopixel_disable = True  # Initialize all pixels to 'off'
-
-#   pinMode(SPEAKER_SHUTDOWN, OUTPUT);
-#   digitalWrite(SPEAKER_SHUTDOWN, LOW);
+MAGTAG.peripherals.speaker_disable = True
 
 #   // Red LED
 #   pinMode(13, OUTPUT);
+# board.NEOPIXEL
 
 #   // Neopixel power
 #   pinMode(NEOPIXEL_POWER, OUTPUT);
@@ -67,8 +66,12 @@ rotation = 0
 while True:
     loops = loops + 1
 
-# void loop() {
-#   j++;
+    if loops == 0:
+        print(f'Rotation: {rotation}')
+        if rotation == 0 or rotation == 2:
+            MAGTAG.display.setRotation(rotation*90) # TODO: will this work?
+             MAGTAG.display.clearBuffer()
+             MAGTAG.display.drawBitmap()
 #   if (j == 0) {
 #     Serial.print("Rotation: "); Serial.println(rotation);
 #     if (rotation == 0 || rotation == 2) {
@@ -81,8 +84,10 @@ while True:
 #   // Red LED On
 #   digitalWrite(13, HIGH);
 
-#   //Serial.print(".");
-#   if (j % 10 == 0) {
+    print(".")
+    if loops % 10 == 0:
+        pass
+#    if (j % 10 == 0) {
 #       sensors_event_t event;
 #       lis.getEvent(&event);
     
@@ -143,6 +148,9 @@ while True:
 #     digitalWrite(SPEAKER_SHUTDOWN, LOW);
 #   } else {
 #     // neopixelate
+    for i in range(len(macropad.pixels)):
+        color_value = ((i * 256 / len(macropad.pixels)) + loops) % 255
+        macropad.pixels[i] = colorwheel(color_value)
 #     for (int i = 0; i < intneo.numPixels(); i++) {
 #       intneo.setPixelColor(i, Wheel(((i * 256 / intneo.numPixels()) + j) & 255));
 #     }
