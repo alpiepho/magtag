@@ -5,48 +5,30 @@ import board
 import time
 from adafruit_magtag.magtag import MagTag
 from rainbowio import colorwheel  # TODO install to lib
+from analogio import AnalogIn
 
 MAGTAG = MagTag(status_neopixel=None)
-MAGTAG.peripherals.neopixel_disable = False
 
 print("Adafruit EPD Portal demo, in CircuitPython")
 
+MAGTAG.peripherals.neopixel_disable = False
 MAGTAG.peripherals.neopixels.setBrightness(0.5)
-MAGTAG.peripherals.neopixel_disable = True  # Initialize all pixels to 'off'
 MAGTAG.peripherals.speaker_disable = True
+MAGTAG.peripherals.neopixel_disable = True  # Initialize all pixels to 'off'
 
-#   // Red LED
-#   pinMode(13, OUTPUT);
-# board.NEOPIXEL
-
-#   // Neopixel power
-#   pinMode(NEOPIXEL_POWER, OUTPUT);
-#   digitalWrite(NEOPIXEL_POWER, LOW); // on
-
-#   display.begin(THINKINK_MONO);
-  
-#   if (! lis.begin(0x19)) {
-#     Serial.println("Couldnt start LIS3DH");
-#     display.clearBuffer();
-#     display.setTextSize(3);
-#     display.setTextColor(EPD_BLACK);
-#     display.setCursor(20, 40);
-#     display.print("No LIS3DH?");
-#     display.display();
-#     while (1) delay(100);
-#   }
+MAGTAG.graphics.display.clearBuffer()
+MAGTAG.graphics.display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK)
+MAGTAG.graphics.display.display()
 
 #   analogReadResolution(12); //12 bits
 #   analogSetAttenuation(ADC_11db);  //For all pins
-#   display.clearBuffer();
-#   display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK);
-#   display.display();
-
+accX = AnalogIn(board.acceleration.X)
+accY = AnalogIn(board.acceleration.Y)
+accZ = AnalogIn(board.acceleration.Z)
 
 
 loops = 0
 rotation = 0
-
 while True:
     loops = loops + 1
 
@@ -54,53 +36,34 @@ while True:
         print(f'Rotation: {rotation}')
         if rotation == 0 or rotation == 2:
             MAGTAG.display.setRotation(rotation*90) # TODO: will this work?
-             MAGTAG.display.clearBuffer()
-             MAGTAG.display.drawBitmap()
-            # display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK);
-            # display.display();
+            MAGTAG.graphics.display.clearBuffer()
+            MAGTAG.graphics.display.drawBitmap(0, 38, magtaglogo_mono, MAGTAGLOGO_WIDTH, MAGTAGLOGO_HEIGHT, EPD_BLACK)
+            MAGTAG.graphics.display.display()
 
-#   // Red LED On
-#   digitalWrite(13, HIGH);
+    # Red LED
+    MAGTAG.peripherals.neopixels[3] = 0xFF0000
 
     print(".")
-    if loops % 10 == 0:
-        pass
-#    if (j % 10 == 0) {
-#       sensors_event_t event;
-#       lis.getEvent(&event);
-    
-#       /* Display the results (acceleration is measured in m/s^2) */
-#       Serial.print("X: "); Serial.print(event.acceleration.x);
-#       Serial.print(" \tY: "); Serial.print(event.acceleration.y);
-#       Serial.print(" \tZ: "); Serial.print(event.acceleration.z);
-#       Serial.println(" m/s^2 ");
-#       if ((event.acceleration.x < -5) && (abs(event.acceleration.y) < 5)) {
-#         rotation = 1;
-#       }
-#       if ((abs(event.acceleration.x) < 5) && (event.acceleration.y > 5)) {
-#         rotation = 0;
-#       }
-#       if ((event.acceleration.x > 5) && (abs(event.acceleration.y) < 5)) {
-#         rotation = 3;
-#       }
-#       if ((abs(event.acceleration.x) < 5) && (event.acceleration.y < -5)) {
-#         rotation = 2;
-#       }
+    if loops % 10 == 0:    
+        # Display the results (acceleration is measured in m/s^2)
+        print(f'X: {accX.value} \tY: {accY.value} \tZ: {accZ.value} m/s^2')
+        if accX.value < -5 and abs(accY.value < 5):
+            rotation = 1
+        if accX.value < 5 and abs(accY.value > 5):
+            rotation = 0
+        if accX.value > 5 and abs(accY.value < 5):
+            rotation = 3
+        if accX.value < 5 and abs(accY.value < -5):
+            rotation = 2
       
-#       int light = analogRead(LIGHT_SENSOR);
-#       Serial.print("Light sensor: ");
-#       Serial.println(light);
-  
-#       Serial.print("I2C scanner: ");
-#       for (int i = 0x07; i <= 0x77; i++) {
-#         Wire.beginTransmission(i);
-#         bool found (Wire.endTransmission() == 0);
-#         if (found) {
-#           Serial.printf("0x%02x, ", i);
-#         }
-#       }
-#       Serial.println();
-#   }
+        print(f'Light sensor: {MAGTAG.peripherals.light}')
+
+        # scan i2c
+        print("I2C scanner: ")
+        i2c.try_lock()
+        i2c_list = i2c.scan()
+        i2c.unlock()
+        print(i2c_list)
 
     if MAGTAG.peripherals.button_a_pressed:
         print("Button A pressed")
@@ -123,7 +86,7 @@ while True:
         color_value = ((i * 256 / len(MAGTAG.peripherals.neopixels)) + loops) % 255
         MAGTAG.peripherals.neopixels[i] = colorwheel(color_value)
 
-#   // Red LED off
-#   digitalWrite(13, LOW);
+    # Red LED
+    MAGTAG.peripherals.neopixels[3] = 0x000000
 
     time.sleep(0.01)
