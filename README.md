@@ -19,7 +19,6 @@ Using bundle:
 The following is a list of the source files here.
 
 - cpcode.py - default circuitpython from bundle (with stdout going to screen)
-- dad_jokes.py - see below
 - get_date_time.py - example from adafruit, <b>WARNING<b> This requires creating an account on https://accounts.adafruit.com/
 - interent_test.py - example from adafruit, see below
 - preloaded.ino - the pre loaded code on the hardware, see below
