@@ -21,8 +21,10 @@ The following is a list of the source files here.
 - cpcode.py - default circuitpython from bundle (with stdout going to screen)
 - get_date_time.py - example from adafruit, <b>WARNING<b> This requires creating an account on https://accounts.adafruit.com/
 - interent_test.py - example from adafruit, see below
-- preloaded.ino - the pre loaded code on the hardware, see below
-- preloaded.py - my port of preloaded to circuitpython
+- shipping_demo.ino - the pre loaded code on the hardware, see below
+- magtaglog.h - c array of logo bitmask
+- coin.h - c array of sound for shipping demo
+- shipping_demo.py - my port of preloaded to circuitpython (not complete)
 - sample_secret.py - example of secrets file that goes at root
 - MagTag_Killed_By_Google - Google Graveyard example
 
@@ -48,30 +50,14 @@ secrets = {
     'timezone' : "America/New_York", # http://worldtimeapi.org/timezones
     }
 
-
-## dad_jokes.py - Started Dad Joke
-
-Mashup of Google Graveyard this Dad Joke api:
-
-https://icanhazdadjoke.com/api
-
-Rough outline:
-- load random from offline jokes list
-- display
-- get battery
-- wait 5 seconds
-- attempt to get new joke from site
-- display
-- wait 5 seconds and go to deep sleep
-- button press should start from top of file?
-
-Offline or backup_jokes are created using the python script get_jokes.py.  These are useful to allow the 
-app to seem like it's working while any online data is gathered.
-
-
 ## Learnings
 
-TBD
+- learned how to set up secrets and wifi access
+- attempting to code the shipping ino sketch to circuitpython is informative
+- but they diverge
+- the encapsulation if the MAGTAG class can hinder the coding
+- still informative, even if the port is not completed
+- bugs me, but this may not be completed
 
 
 ## References
@@ -87,8 +73,10 @@ https://icanhazdadjoke.com/api<br>
 - [done] Turn on internet_test.py
 - [done] clean up README.md
 - (optional) Signup for account and test time
-- code preloaded.py from preloaded.ino
-- turn on preloaded.py from preloaded.ino
+- code shipping_demo.py from shipping_demo.ino
+- convert c style bitmask to python
+- convert c style audio to python
+- turn on shipping_demo.py from shipping_demo.ino
 
 
 
